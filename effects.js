@@ -290,6 +290,11 @@ export class SpaceEnvironment {
         }
         geo.computeVertexNormals();
 
+        // Fix: Update bounding volumes since we modified vertices manually
+        // This prevents large asteroids from being culled when partially on-screen
+        geo.computeBoundingSphere();
+        geo.computeBoundingBox();
+
         const mat = new THREE.MeshStandardMaterial({
             color: 0x665555,
             roughness: 0.8,
@@ -408,7 +413,7 @@ export class SpaceEnvironment {
         this.stars.position.copy(cameraPos);
 
         // Generate Asteroids ahead
-        const leadZ = cameraPos.z + 300;
+        const leadZ = cameraPos.z + 600; // Increased spawn distance to prevent pop-in
         while (this.lastChunkZ < leadZ) {
             this.lastChunkZ += this.chunkSize;
             this.generateChunk(this.lastChunkZ);
